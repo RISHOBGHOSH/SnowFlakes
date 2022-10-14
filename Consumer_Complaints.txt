@@ -1,0 +1,108 @@
+
+USE DATABASE DEMODATABASE;
+
+CREATE TABLE  CONSUMER_COMPLAINTS
+   (	
+     DATE_RECEIVED STRING ,
+      PRODUCT NAME VARCHAR2(50) , 
+	  SUB_PRODUCT VARCHAR2(40) , 
+	  ISSUE VARCHAR2(100), 
+      SUB_ISSUE VARCHAR2(100),
+      CONSUMER_COMPLAINT_NARRATIVE VARCHAR2(100),
+      Company_Public_Response STRING,
+      Company VARCHAR(30),
+      State_Name CHAR(4),
+      Zip_Code INTEGER,
+      Tags VARCHAR(10),
+      Consumer_Consent_Provided CHAR(6),
+       Submitted_via STRING,
+      Date_Sent_to_Company STRING,
+     Company_Response_to_Consumer VARCHAR(2),
+     Timely_Response CHAR(4),
+     CONSUMER_DISPUTED CHAR(4),
+     COMPLAINT_ID NUMBER(12,0) NOT NULL PRIMARY KEY
+);
+
+
+*****UPLOAD DATA****
+
+DATABASE > RS_INEURON_SNOWFLAKE> RS_INEURON_CONSUMER_COMPLAINTS (PUBLIC)
+
+load DATA 
++
+
+SELECT WAREHOUSE 
+
+
+--CONSUMER_COMPLAINTS
+
+
+CREATE DATABASE RS_INEURON_SNOWFLAKE;
+USE DATABASE RS_INEURON_SNOWFLAKE;
+
+CREATE OR REPLACE TABLE RS_INEURON_CONSUMER_COMPLAINTS
+   (	
+     DATE_RECEIVED STRING ,
+      PRODUCT_NAME VARCHAR2(100) , 
+	  SUB_PRODUCT VARCHAR2(100) , 
+	  ISSUE VARCHAR2(100), 
+      SUB_ISSUE VARCHAR2(100),
+      CONSUMER_COMPLAINT_NARRATIVE VARCHAR2(10000),
+      Company_Public_Response STRING,
+      Company VARCHAR(100),
+      State_Name CHAR(100),
+      Zip_Code INT,
+      Tags VARCHAR(100),
+      Consumer_Consent_Provided CHAR(100),
+       Submitted_via STRING,
+      Date_Sent_to_Company STRING,
+     Company_Response_to_Consumer VARCHAR(100),
+     Timely_Response CHAR(100),
+     CONSUMER_DISPUTED CHAR(100),
+     COMPLAINT_ID NUMBER(12,0) NOT NULL PRIMARY KEY
+);
+
+
+SELECT * FROM RS_INEURON_CONSUMER_COMPLAINTS
+
+SHOW COLUMNS IN RS_INEURON_CONSUMER_COMPLAINTS
+
+
+--TASK
+
+--Cosumer Loan
+--Student Loan
+--Payday Loan
+
+--all Above 3 into single coulmn As loan_type
+--And rest other As 'other_financ_serv'
+
+
+SELECT *,
+CASE
+when PRODUCT_NAME IN ('Consumer Loam' ,'Student loan' , 'payday Loan') THEN 'CSP_LOAN'
+ELSE 'OTHER_FINAN_SERV'
+END AS LOAN_TYPE
+FROM RS_INEURON_CONSUMER_COMPLAINTS
+
+
+SELECT DISTINCT substring(date_received,7,12) FROM RS_INEURON_CONSUMER_COMPLAINTS
+
+
+select distinct (extract(year from (to_date(date_received ,'dd-mm-yyyy')))) from RS_INEURON_CONSUMER_COMPLAINTS
+
+
+--2013 - 2015
+--1st jan 2013 - 31st dec 2013 - PPR12_PERIOD
+--1st jan 2014 - 31st dec 2014 - PR12_PERIOD
+--1st jan 2015 - 31st dec 2015 - R12_PERIOD
+--name it TXN_PERIOD
+
+SELECT *,
+CASE
+WHEN (to_date(date_received, 'DD-MM-YYYY'))>= '2013-01-01' AND (to_date(date_received,'DD-MM-YYYY'))>= '2013-12-01' THEN 'PPR12_PERIOD'
+WHEN (to_date(date_received, 'DD-MM-YYYY'))>= '2014-01-01' AND (to_date(date_received,'DD-MM-YYYY'))>= '2014-12-01' THEN 'PR12_PERIOD'
+WHEN (to_date(date_received, 'DD-MM-YYYY'))>= '2015-01-01' AND (to_date(date_received,'DD-MM-YYYY'))>= '2015-12-01' THEN 'R12_PERIOD'
+END AS TXN_PERIOD
+FROM RS_INEURON_CONSUMER_COMPLAINTS;
+
